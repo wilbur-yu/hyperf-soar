@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Wilbur\HyperfSoar\Aspect;
 
 use Guanguans\SoarPHP\Exceptions\InvalidArgumentException;
-use Guanguans\SoarPHP\Exceptions\InvalidConfigException;
 use Hyperf\Config\Annotation\Value;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Annotation\Inject;
@@ -13,6 +12,7 @@ use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\Di\Exception\Exception;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Utils\Context;
+use Swoole\Coroutine\Channel;
 use Wilbur\HyperfSoar\Listener\QueryExecListener;
 use Wilbur\HyperfSoar\SoarService;
 
@@ -43,7 +43,6 @@ class ResponseAspect extends AbstractAspect
 	 * @return mixed
 	 * @throws InvalidArgumentException
 	 * @throws Exception
-	 * @throws InvalidConfigException
 	 */
 	public function process(ProceedingJoinPoint $proceedingJoinPoint)
 	{
@@ -56,7 +55,12 @@ class ResponseAspect extends AbstractAspect
 		$eventSqlList = Context::get($sqlKey);
 		$explains     = [];
 		foreach ($eventSqlList as $sql) {
-			$explains[] = $this->soar->score($sql);
+			$channel = new Channel();
+			\co(static function () use ($sql, $channel) {
+				$explain = $this->soar->score($sql);
+				$channel->push($explain);
+			});
+			$explains[] = $channel->pop();
 		}
 
 		$response = $proceedingJoinPoint->process();
