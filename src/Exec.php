@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Wilbur\HyperfSoar;
 
 use Guanguans\SoarPHP\Exceptions\InvalidArgumentException;
+use Guanguans\SoarPHP\Exceptions\RuntimeException;
 use Swoole\Coroutine\System;
 
 trait Exec
@@ -13,6 +14,7 @@ trait Exec
 	 *
 	 * @return string|null
 	 * @throws InvalidArgumentException
+	 * @throws RuntimeException
 	 */
 	public function exec($command) : ?string
 	{
@@ -24,6 +26,12 @@ trait Exec
 			throw new InvalidArgumentException(sprintf("Command error: '%s'", $command));
 		}
 
-		return System::exec($command);
+		$result = System::exec($command);
+
+		if (0 !== $result['code']) {
+			throw new RuntimeException(sprintf("Command error: '%s'", $result['output']));
+		}
+
+		return $result['output'];
 	}
 }
