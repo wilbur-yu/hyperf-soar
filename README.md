@@ -26,6 +26,7 @@ php bin/hyperf vendor:publish wilbur/hyperf-soar
 ### env 增加配置
 ~~~env
 SOAR_ENABLED=true
+SOAR_TEST_DSN_DISABLE=false
 SOAR_PATH=your_soar_path
 SOAR_TEST_DSN_HOST=127.0.0.1
 SOAR_TEST_DSN_PORT=3306
