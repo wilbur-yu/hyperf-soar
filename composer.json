@@ -1,0 +1,48 @@
+{
+    "name": "wilbur/hyperf-soar",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "hyperf"
+    ],
+    "description": "",
+    "autoload": {
+        "psr-4": {
+            "Wilbur\\HyperfSoar\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HyperfTest\\": "tests"
+        }
+    },
+    "require": {
+        "php": ">=7.2",
+        "ext-json": "*",
+        "guanguans/soar-php": "dev-master",
+        "hyperf/config": "1.1.*",
+        "hyperf/database": "1.1.*",
+        "hyperf/di": "1.1.*",
+        "hyperf/framework": "1.1.*"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "phpstan/phpstan": "^0.10.5",
+        "hyperf/testing": "1.1.*"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "co-phpunit -c phpunit.xml --colors=always",
+        "analyze": "phpstan analyse --memory-limit 300M -l 0 ./src",
+        "cs-fix": "php-cs-fixer fix $1"
+    },
+    "extra": {
+        "hyperf": {
+            "config": "Wilbur\\HyperfSoar\\ConfigProvider"
+        }
+    },
+    "minimum-stability": "dev"
+}
