@@ -56,7 +56,7 @@ class ResponseAspect extends AbstractAspect
 		$explains     = [];
 		foreach ($eventSqlList as $sql) {
 			$channel = new Channel();
-			\co(static function () use ($sql, $channel) {
+			\co(function () use ($sql, $channel) {
 				$explain = $this->soar->score($sql);
 				$channel->push($explain);
 			});
