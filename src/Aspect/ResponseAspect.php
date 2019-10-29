@@ -41,7 +41,6 @@ class ResponseAspect extends AbstractAspect
 	 * @param ProceedingJoinPoint $proceedingJoinPoint
 	 *
 	 * @return mixed
-	 * @throws InvalidArgumentException
 	 * @throws Exception
 	 */
 	public function process(ProceedingJoinPoint $proceedingJoinPoint)
