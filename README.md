@@ -35,6 +35,8 @@ SOAR_TEST_DSN_PASSWORD=
 SOAR_REPORT_TYPE=markdown
 ~~~
 
+> 在 `hyperf start` 后,监听 `QueryExec` 事件, 在全局的响应中插入了监听到 `sql` 列表对应的优化建议
+> 目前只对response()->json()进行了插入
 ## Thanks
 
 * [soar](https://github.com/XiaoMi/soar)
