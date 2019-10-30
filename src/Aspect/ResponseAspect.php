@@ -57,7 +57,8 @@ class ResponseAspect extends AbstractAspect
 
 		foreach ($eventSqlList as $sql) {
 			\co(function () use ($sql, $channel) {
-				$soar = $this->soar->score($sql);
+				$explain = [];
+				$soar    = $this->soar->score($sql);
 				if ($this->soarConfig['-report-type'] === 'json') {
 					$explain['sql']     = $sql;
 					$explain['explain'] = \json_decode($soar, true);
