@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 namespace Wilbur\HyperfSoar\Aspect;
 
-use Guanguans\SoarPHP\Exceptions\InvalidArgumentException;
 use Hyperf\Config\Annotation\Value;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Annotation\Inject;
@@ -26,10 +25,10 @@ class ResponseAspect extends AbstractAspect
 	];
 
 	/**
-	 * @Value("soar.enabled")
+	 * @Value("soar")
 	 * @var bool
 	 */
-	protected $soarIsEnabled;
+	protected $soarConfig;
 
 	/**
 	 * @Inject
@@ -47,18 +46,22 @@ class ResponseAspect extends AbstractAspect
 	{
 		$sqlKey = \class_basename(QueryExecListener::class);
 
-		if (!$this->soarIsEnabled || !Context::has($sqlKey)) {
+		if (!$this->soarConfig['enabled'] || !Context::has($sqlKey)) {
 			return $proceedingJoinPoint->process();
 		}
 
 		$eventSqlList = Context::get($sqlKey);
 
-		$explains     = [];
-		$channel = new Channel();
+		$explains = [];
+		$channel  = new Channel();
 
 		foreach ($eventSqlList as $sql) {
 			\co(function () use ($sql, $channel) {
-				$explain = $this->soar->score($sql);
+				$explain['sql'] = $sql;
+				$soar           = $this->soar->score($sql);
+				if ($this->soarConfig['-report-type'] === 'json') {
+					$explain['explain'] = \json_decode($soar, true);
+				}
 				$channel->push($explain);
 			});
 			$explains[] = $channel->pop();
