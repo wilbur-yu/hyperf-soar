@@ -18,13 +18,12 @@ use Swoole\Coroutine\System;
 trait Exec
 {
     /**
-     * @param $command
-     *
+     * @param string $command
      * @throws \Guanguans\SoarPHP\Exceptions\InvalidArgumentException
      * @throws \Guanguans\SoarPHP\Exceptions\RuntimeException
      * @return mixed
      */
-    public function exec($command)
+    public function exec(string $command): string
     {
         if (! is_string($command)) {
             throw new InvalidArgumentException('Command type must be a string');
