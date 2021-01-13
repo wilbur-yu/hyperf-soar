@@ -45,7 +45,7 @@ class QueryExecListener implements ListenerInterface
     public function process(object $event): void
     {
         if ($event instanceof QueryExecuted && $this->soarIsEnabled) {
-            $sql = $event->sql;
+            $sql = str_replace('`', '', $event->sql);
             if (! Arr::isAssoc($event->bindings)) {
                 foreach ($event->bindings as $key => $value) {
                     $sql = Str::replaceFirst('?', "'{$value}'", $sql);
