@@ -1,6 +1,14 @@
 <?php
-declare(strict_types = 1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  wenber.yu@creative-life.club
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace Wilbur\HyperfSoar;
 
 use Guanguans\SoarPHP\Exceptions\InvalidArgumentException;
@@ -9,29 +17,29 @@ use Swoole\Coroutine\System;
 
 trait Exec
 {
-	/**
-	 * @param $command
-	 *
-	 * @return string|null
-	 * @throws InvalidArgumentException
-	 * @throws RuntimeException
-	 */
-	public function exec($command) : ?string
-	{
-		if (!is_string($command)) {
-			throw new InvalidArgumentException('Command type must be a string');
-		}
+    /**
+     * @param $command
+     *
+     * @throws \Guanguans\SoarPHP\Exceptions\InvalidArgumentException
+     * @throws \Guanguans\SoarPHP\Exceptions\RuntimeException
+     * @return mixed
+     */
+    public function exec($command)
+    {
+        if (! is_string($command)) {
+            throw new InvalidArgumentException('Command type must be a string');
+        }
 
-		if (false === stripos($command, 'soar')) {
-			throw new InvalidArgumentException(sprintf("Command error: '%s'", $command));
-		}
+        if (stripos($command, 'soar') === false) {
+            throw new InvalidArgumentException(sprintf("Command error: '%s'", $command));
+        }
 
-		$result = System::exec($command);
+        $result = System::exec($command);
 
-		if (0 !== $result['code']) {
-			throw new RuntimeException(sprintf("Command error: '%s'", $result['output']));
-		}
+        if ($result['code'] !== 0) {
+            throw new RuntimeException(sprintf("Command error: '%s'", $result['output']));
+        }
 
-		return $result['output'];
-	}
+        return $result['output'];
+    }
 }
