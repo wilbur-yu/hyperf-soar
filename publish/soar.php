@@ -11,7 +11,7 @@ declare(strict_types=1);
  */
 return [
     'enabled' => env('SOAR_ENABLED', env('APP_ENV') === 'local'),
-    '-soar-path' => env('SOAR_PATH', ''),
+    '-soar-path' => env('SOAR_PATH', ''), // soar 二进制文件存储路径
     '-test-dsn' => [
         'host' => env('SOAR_TEST_DSN_HOST', '127.0.0.1'),
         'port' => env('SOAR_TEST_DSN_PORT', '3306'),
@@ -20,5 +20,6 @@ return [
         'password' => env('SOAR_TEST_DSN_PASSWORD', ''),
         'disable' => env('SOAR_TEST_DSN_DISABLE', false),
     ],
-    '-report-type' => env('SOAR_REPORT_TYPE', 'markdown'),
+    '-report-type' => env('SOAR_REPORT_TYPE', 'json'), // 报告输出格式
+    '-sampling' => env('SOAR_SAMPLING', true), // 是否开启数据采样开关
 ];
