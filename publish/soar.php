@@ -20,6 +20,8 @@ return [
         'password' => env('SOAR_TEST_DSN_PASSWORD', ''),
         'disable' => env('SOAR_TEST_DSN_DISABLE', false),
     ],
-    '-report-type' => env('SOAR_REPORT_TYPE', 'json'), // 报告输出格式
     '-sampling' => env('SOAR_SAMPLING', true), // 是否开启数据采样开关
+    '-allow-drop-index' => env('SOAR_ALLOW_DROP_INDEX', true), // 允许输出删除重复索引的建议
+    '-drop-test-temporary' => env('SOAR_DROP_TEST_TEMPORARY', true), // 是否清理测试环境产生的临时库表
+    '-log-output' => BASE_PATH . '/runtime/logs/soar.log',
 ];

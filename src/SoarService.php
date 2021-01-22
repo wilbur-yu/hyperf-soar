@@ -24,6 +24,7 @@ class SoarService extends Soar
         $config = $config ?? config('soar');
 
         Arr::forget($config, 'enabled');
+        Arr::set($config, '-report-type', 'json');
 
         parent::__construct($config);
     }
