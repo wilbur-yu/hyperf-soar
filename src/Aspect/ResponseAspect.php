@@ -26,6 +26,7 @@ use Wilbur\HyperfSoar\SoarService;
 use function array_merge;
 use function class_basename;
 use function co;
+use function explode;
 use function json_decode;
 use function json_encode;
 use const JSON_UNESCAPED_UNICODE;
@@ -43,13 +44,13 @@ class ResponseAspect extends AbstractAspect
      * @Value("soar")
      * @var array
      */
-    protected $soarConfig;
+    protected $config;
 
     /**
      * @Inject
      * @var SoarService
      */
-    protected $soar;
+    protected $service;
 
     /**
      * @throws \Guanguans\SoarPHP\Exceptions\InvalidArgumentException
@@ -60,7 +61,7 @@ class ResponseAspect extends AbstractAspect
     {
         $sqlKey = class_basename(QueryExecListener::class);
 
-        if (! $this->soarConfig['enabled'] || ! Context::has($sqlKey)) {
+        if (! $this->config['enabled'] || ! Context::has($sqlKey)) {
             return $proceedingJoinPoint->process();
         }
 
@@ -71,15 +72,11 @@ class ResponseAspect extends AbstractAspect
 
         foreach ($eventSqlList as $sql) {
             co(function () use ($sql, $channel) {
-                $explain = [];
-                $soar = $this->soar->score($sql);
-                if ($this->soarConfig['-report-type'] === 'json') {
-                    $explain['sql'] = [
-                        'query' => $sql,
-                        'fingerprint' => $this->soar->fingerPrint($sql),
-                    ];
-                    $explain['explain'] = $this->formatting($soar);
-                }
+                $soar = $this->service->score($sql);
+                $explain = [
+                    'query' => $sql,
+                    'explain' => $this->formatting($soar),
+                ];
                 $channel->push($explain);
             });
             $explains[] = $channel->pop();
@@ -105,9 +102,14 @@ class ResponseAspect extends AbstractAspect
     {
         $fullScore = 100;
         $unitScore = 5;
-        $level = (int) Str::after($severity, 'L');
+        $levels = explode(',', $severity);
+        $subScore = 0;
+        foreach ($levels as $level) {
+            $level = (int) Str::after($level, 'L');
+            $subScore += ($level * $unitScore);
+        }
 
-        return $fullScore - ($level * $unitScore);
+        return $fullScore - $subScore;
     }
 
     /**
@@ -118,10 +120,13 @@ class ResponseAspect extends AbstractAspect
         $results = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         $results = Arr::flatten($results, 1);
 
-        foreach ($results as &$result) {
-            $result['Score'] = $this->getScore($result['Severity']);
+        $items = [];
+        foreach ($results as $result) {
+            $score = $this->getScore($result['Severity']);
+            $items[] = array_merge($result, ['Score' => $score]);
         }
 
-        return $results;
+        unset($results);
+        return $items;
     }
 }
