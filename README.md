@@ -7,7 +7,7 @@
 composer require wilbur/hyperf-soar:1.0 --dev
 
 # hyperf 2.*
-composer require wilbur/hyperf-soar:dev-master --dev
+composer require wilbur/hyperf-soar --dev
 ~~~
 
 ## 发布配置文件
