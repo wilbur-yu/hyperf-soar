@@ -77,7 +77,7 @@ class ResponseAspect extends AbstractAspect
 
         foreach ($eventSqlList as $sql) {
             co(function () use ($sql, $channel) {
-                $soar = $this->service->score($sql);
+                $soar    = $this->service->score($sql);
                 $explain = [
                     'query'   => $sql,
                     'explain' => $this->formatting($soar),
@@ -103,14 +103,17 @@ class ResponseAspect extends AbstractAspect
         return $response->withBody(new SwooleStream($newBody));
     }
 
-    protected function getScore(string $severity): int
+    protected function getScore(?string $severity = null): ?int
     {
+        if (! $severity) {
+            return null;
+        }
         $fullScore = 100;
         $unitScore = 5;
         $levels    = explode(',', $severity);
         $subScore  = 0;
         foreach ($levels as $level) {
-            $level = (int) Str::after($level, 'L');
+            $level    = (int) Str::after($level, 'L');
             $subScore += ($level * $unitScore);
         }
 
@@ -127,8 +130,11 @@ class ResponseAspect extends AbstractAspect
 
         $items = [];
         foreach ($results as $result) {
-            $score   = $this->getScore($result['Severity']);
-            $items[] = array_merge($result, ['Score' => $score]);
+            $score = $this->getScore($result['Severity']);
+            if ($score) {
+                $result['Score'] = $score;
+            }
+            $items[] = $result;
         }
 
         unset($results);
