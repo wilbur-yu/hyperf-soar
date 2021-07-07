@@ -14,7 +14,7 @@ declare(strict_types = 1);
  */
 return [
     'enabled'    => env('SOAR_ENABLED', env('APP_ENV') === 'local'),
-    '-soar-path' => env('SOAR_PATH', ''), // soar 二进制文件存储路径
+    '-soar-path' => env('SOAR_PATH', ''), // soar 二进制文件的绝对路径
     '-test-dsn'  => [
         'host'     => env('SOAR_TEST_DSN_HOST', '127.0.0.1'),
         'port'     => env('SOAR_TEST_DSN_PORT', '3306'),

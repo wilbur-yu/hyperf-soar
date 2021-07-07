@@ -67,7 +67,7 @@ class ResponseAspect extends AbstractAspect
     {
         $sqlKey = class_basename(QueryExecListener::class);
 
-        if (! $this->config['enabled'] || ! Context::has($sqlKey)) {
+        if (! $this->config['enabled'] || ! Context::has($sqlKey) || ! is_file($this->config['-soar-path'])) {
             return $proceedingJoinPoint->process();
         }
 
