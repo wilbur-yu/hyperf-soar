@@ -24,6 +24,7 @@ use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Utils\Arr;
 use Hyperf\Utils\Context;
 use Hyperf\Utils\Str;
+use Throwable;
 use Wilbur\HyperfSoar\Listener\QueryExecListener;
 use Wilbur\HyperfSoar\SoarService;
 use function array_merge;
@@ -74,27 +75,34 @@ class ResponseAspect extends AbstractAspect
 
         $explains = [];
         $channel  = new Channel();
-
-        foreach ($eventSqlList as $sql) {
-            co(function () use ($sql, $channel) {
-                $soar    = $this->service->score($sql);
-                $explain = [
-                    'query'   => $sql,
-                    'explain' => $this->formatting($soar),
-                ];
-                $channel->push($explain);
-            });
-            $explains[] = $channel->pop();
-        }
-
         $response = $proceedingJoinPoint->process();
-
-        $oldBody = json_decode(
+        $oldBody  = json_decode(
             $response->getBody()->getContents(),
             true,
             512,
             JSON_THROW_ON_ERROR
         );
+        try {
+            foreach ($eventSqlList as $sql) {
+                co(function () use ($sql, $channel) {
+                    $soar    = $this->service->score($sql);
+                    $explain = [
+                        'query'   => $sql,
+                        'explain' => $this->formatting($soar),
+                    ];
+                    $channel->push($explain);
+                });
+                $explains[] = $channel->pop();
+            }
+        } catch (Throwable $throwable) {
+            $explains = [
+                'code'    => $throwable->getCode(),
+                'message' => $throwable->getMessage(),
+                'file'    => $throwable->getFile(),
+                'line'    => $throwable->getLine(),
+            ];
+        }
+
         $newBody = json_encode(
             array_merge($oldBody, ['soar' => $explains]),
             JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
