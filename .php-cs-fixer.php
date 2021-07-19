@@ -1,98 +1,81 @@
 <?php
 
-declare(strict_types = 1);
-/**
- * This file is part of project hyperf-soar.
- *
- * @author   wenber.yu@creative-life.club
- * @link     https://github.com/wilbur-yu
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
 $header = <<<'EOF'
-This file is part of project hyperf-soar.
-
-@author   wenber.yu@creative-life.club
-@link     https://github.com/wilbur-yu
+This file is part of Hyperf.
 
 @link     https://www.hyperf.io
 @document https://hyperf.wiki
-@contact  group@hyperf.io
+@contact  wenber.yu@creative-life.club
 @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
 EOF;
 
 return (new PhpCsFixer\Config())->setRiskyAllowed(true)
     ->setRules([
-        '@PSR2'                                      => true, // 开启预设的规则
-        '@Symfony'                                   => true, // 开启预设的规则
-        '@DoctrineAnnotation'                        => true, // 开启预设的规则
-        '@PhpCsFixer'                                => true,
+        '@PSR2'               => true, // 开启预设的规则
+        '@Symfony'            => true, // 开启预设的规则
+        '@DoctrineAnnotation' => true, // 开启预设的规则
+        '@PhpCsFixer'         => true,
         'header_comment'                             => [
             'comment_type' => 'PHPDoc',
             'header'       => $header,
             'separate'     => 'none',
             'location'     => 'after_declare_strict',
         ],
-        'array_syntax'                               => [
+        'array_syntax' => [
             'syntax' => 'short', // array 使用短声明
         ],
-        'list_syntax'                                => [
+        'list_syntax' => [
             'syntax' => 'short', // list 使用短声明
         ],
-        'concat_space'                               => [
+        'concat_space' => [
             'spacing' => 'one', // 点拼接必须前后有空格分割
         ],
-        'declare_equal_normalize'                    => [
+        'declare_equal_normalize' => [
             'space' => 'single', // 严格类型声明语句中的等号应包含空格
         ],
-        'blank_line_before_statement'                => [ // 空行换行必须在任何已配置的语句之前
+        'blank_line_before_statement' => [ // 空行换行必须在任何已配置的语句之前
             'statements' => [
                 'break',
                 'continue',
                 'declare',
                 'return',
                 'throw',
-                'try',
+                'try'
             ],
         ],
-        'general_phpdoc_annotation_remove'           => [
+        'general_phpdoc_annotation_remove' => [
             'annotations' => [
-                'author',
+                'author'
             ],
         ],
-        'ordered_imports'                            => [
-            'imports_order'  => [
-                'class',
-                'function',
-                'const', // 按顺序use导入
+        'ordered_imports' => [
+            'imports_order' => [
+                'class', 'function', 'const', // 按顺序use导入
             ],
             'sort_algorithm' => 'alpha',
         ],
-        'single_line_comment_style'                  => [
+        'single_line_comment_style' => [
             'comment_types' => [
             ],
         ],
-        'yoda_style'                                 => [
+        'yoda_style' => [
             'always_move_variable' => false,
-            'equal'                => false,
-            'identical'            => false,
+            'equal' => false,
+            'identical' => false,
         ],
-        'multiline_whitespace_before_semicolons'     => [
+        'multiline_whitespace_before_semicolons' => [
             'strategy' => 'no_multi_line',
         ],
-        'constant_case'                              => [
+        'constant_case' => [
             'case' => 'lower', // 常量(true,false,null)使用大写(upper)还是小写(lower)语法
         ],
-        'binary_operator_spaces'                     => [
+        'binary_operator_spaces' => [
             'default' => 'align_single_space', // 等号对齐、数字箭头符号对齐
         ],
-        'increment_style'                            => true, // 自增自减运算符开启前置样式
-        'lowercase_cast'                             => false, // 类型强制小写
-        'array_indentation'                          => true, // 数组的每个元素必须缩进一次
-        'no_superfluous_phpdoc_tags'                 => false, // 移出没有用的注释
+        'increment_style' => true, // 自增自减运算符开启前置样式
+        'lowercase_cast' => false, // 类型强制小写
+        'array_indentation' => true, // 数组的每个元素必须缩进一次
+        'no_superfluous_phpdoc_tags' => false, // 移出没有用的注释
         'normalize_index_brace'                      => true,
         'class_attributes_separation'                => true,
         'combine_consecutive_unsets'                 => true, // 当多个 unset 使用的时候，合并处理
@@ -126,21 +109,16 @@ return (new PhpCsFixer\Config())->setRiskyAllowed(true)
             'keep_multiple_spaces_after_comma' => false, // 逗号后是否保留多个空格
         ],
 
-        'phpdoc_separation'              => true, // 不同注释部分按照单空行隔开
+        'phpdoc_separation' => true, // 不同注释部分按照单空行隔开
         'phpdoc_single_line_var_spacing' => true,
-        'phpdoc_indent'                  => true, // phpdoc 缩进
-        'phpdoc_align'                   => [
+        'phpdoc_indent' => true, // phpdoc 缩进
+        'phpdoc_align' => [
             'align' => 'vertical',
-            'tags'  => [
-                'param',
-                'return',
-                'throws',
-                'type',
-                'var',
-                'property',
-            ],
+            'tags' => [
+                'param', 'return', 'throws', 'type', 'var', 'property'
+            ]
         ],
-        'align_multiline_comment'        => [
+        'align_multiline_comment' => [
             'comment_type' => 'all_multiline', // 多行注释的每一行都必须带有星号[PSR-5]，并且必须与第一行对齐。
         ],
     ])
