@@ -45,16 +45,28 @@ use const JSON_UNESCAPED_UNICODE;
  */
 class ResponseAspect extends AbstractAspect
 {
+    /**
+     * @Value("soar.cut_classes")
+     * @var array
+     */
     public $classes;
+    /**
+     * @Value("soar")
+     * @var array
+     */
     protected $config;
+    /**
+     * @Inject()
+     * @var \Wilbur\HyperfSoar\SoarService
+     */
     protected $service;
 
-    public function __construct(ContainerInterface $container)
-    {
-        $this->service = $container->get(SoarService::class);
-        $this->config = $container->get(ConfigInterface::class)->get('soar');
-        $this->classes = $this->config['cut_classes'] ?? ['Hyperf\HttpServer\Response::json',];
-    }
+    // public function __construct(ContainerInterface $container)
+    // {
+    //     $this->service = $container->get(SoarService::class);
+    //     $this->config = $container->get(ConfigInterface::class)->get('soar');
+    //     $this->classes = $this->config['cut_classes'] ?? ['Hyperf\HttpServer\Response::json',];
+    // }
 
     /**
      * @throws \Hyperf\Di\Exception\Exception
