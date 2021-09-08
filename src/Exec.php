@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of project hyperf-soar.
  *
@@ -12,6 +12,7 @@ declare(strict_types = 1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 namespace Wilbur\HyperfSoar;
 
 use Guanguans\SoarPHP\Exceptions\InvalidArgumentException;
@@ -21,7 +22,7 @@ use Swoole\Coroutine\System;
 trait Exec
 {
     /**
-     * @param string $command
+     * @param  string  $command
      *
      * @throws \Guanguans\SoarPHP\Exceptions\InvalidArgumentException
      * @throws \Guanguans\SoarPHP\Exceptions\RuntimeException
@@ -30,7 +31,7 @@ trait Exec
      */
     public function exec(string $command): string
     {
-        if (! is_string($command)) {
+        if (!is_string($command)) {
             throw new InvalidArgumentException('Command type must be a string');
         }
 

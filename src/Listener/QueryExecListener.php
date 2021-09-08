@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of project hyperf-soar.
  *
@@ -12,6 +12,7 @@ declare(strict_types = 1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 namespace Wilbur\HyperfSoar\Listener;
 
 use Hyperf\Contract\ConfigInterface;
@@ -21,6 +22,7 @@ use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Utils\Arr;
 use Hyperf\Utils\Context;
 use Hyperf\Utils\Str;
+
 use function class_basename;
 
 /**
@@ -49,12 +51,12 @@ class QueryExecListener implements ListenerInterface
     {
         if ($event instanceof QueryExecuted && $this->soarIsEnabled) {
             $sql = str_replace('`', '', $event->sql);
-            if (! Arr::isAssoc($event->bindings)) {
+            if (!Arr::isAssoc($event->bindings)) {
                 foreach ($event->bindings as $key => $value) {
                     $sql = Str::replaceFirst('?', "'{$value}'", $sql);
                 }
             }
-            $eventSqlList   = (array) Context::get(class_basename(__CLASS__));
+            $eventSqlList = (array)Context::get(class_basename(__CLASS__));
             $eventSqlList[] = $sql;
             Context::set(class_basename(__CLASS__), $eventSqlList);
         }

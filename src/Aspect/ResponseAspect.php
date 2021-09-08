@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of project hyperf-soar.
  *
@@ -12,9 +12,11 @@ declare(strict_types = 1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 namespace Wilbur\HyperfSoar\Aspect;
 
 use Hyperf\Config\Annotation\Value;
+use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Di\Aop\AbstractAspect;
@@ -27,12 +29,15 @@ use Hyperf\Utils\Str;
 use Throwable;
 use Wilbur\HyperfSoar\Listener\QueryExecListener;
 use Wilbur\HyperfSoar\SoarService;
+use Psr\Container\ContainerInterface;
+
 use function array_merge;
 use function class_basename;
 use function co;
 use function explode;
 use function json_decode;
 use function json_encode;
+
 use const JSON_UNESCAPED_UNICODE;
 
 /**
@@ -40,26 +45,18 @@ use const JSON_UNESCAPED_UNICODE;
  */
 class ResponseAspect extends AbstractAspect
 {
-    public $classes = [
-        'Hyperf\HttpServer\Response::json',
-    ];
-
-    /**
-     * @Value("soar")
-     *
-     * @var array
-     */
+    public $classes;
     protected $config;
-
-    /**
-     * @Inject
-     *
-     * @var SoarService
-     */
     protected $service;
 
+    public function __construct(ContainerInterface $container)
+    {
+        $this->service = $container->get(SoarService::class);
+        $this->config = $container->get(ConfigInterface::class)->get('soar');
+        $this->classes = $this->config['cut_classes'] ?? ['Hyperf\HttpServer\Response::json',];
+    }
+
     /**
-     * @throws \Guanguans\SoarPHP\Exceptions\InvalidArgumentException
      * @throws \Hyperf\Di\Exception\Exception
      * @throws \JsonException
      */
@@ -67,16 +64,16 @@ class ResponseAspect extends AbstractAspect
     {
         $sqlKey = class_basename(QueryExecListener::class);
 
-        if (! $this->config['enabled'] || ! Context::has($sqlKey) || ! is_file($this->config['-soar-path'])) {
+        if (!$this->config['enabled'] || !Context::has($sqlKey) || !is_file($this->config['-soar-path'])) {
             return $proceedingJoinPoint->process();
         }
 
         $eventSqlList = Context::get($sqlKey);
 
         $explains = [];
-        $channel  = new Channel();
+        $channel = new Channel();
         $response = $proceedingJoinPoint->process();
-        $oldBody  = json_decode(
+        $oldBody = json_decode(
             $response->getBody()->getContents(),
             true,
             512,
@@ -85,9 +82,9 @@ class ResponseAspect extends AbstractAspect
         try {
             foreach ($eventSqlList as $sql) {
                 co(function () use ($sql, $channel) {
-                    $soar    = $this->service->score($sql);
+                    $soar = $this->service->score($sql);
                     $explain = [
-                        'query'   => $sql,
+                        'query' => $sql,
                         'explain' => $this->formatting($soar),
                     ];
                     $channel->push($explain);
@@ -96,10 +93,10 @@ class ResponseAspect extends AbstractAspect
             }
         } catch (Throwable $throwable) {
             $explains = [
-                'code'    => $throwable->getCode(),
+                'code' => $throwable->getCode(),
                 'message' => $throwable->getMessage(),
-                'file'    => $throwable->getFile(),
-                'line'    => $throwable->getLine(),
+                'file' => $throwable->getFile(),
+                'line' => $throwable->getLine(),
             ];
         }
 
@@ -113,15 +110,15 @@ class ResponseAspect extends AbstractAspect
 
     protected function getScore(?string $severity = null): ?int
     {
-        if (! $severity) {
+        if (!$severity) {
             return null;
         }
         $fullScore = 100;
         $unitScore = 5;
-        $levels    = explode(',', $severity);
-        $subScore  = 0;
+        $levels = explode(',', $severity);
+        $subScore = 0;
         foreach ($levels as $level) {
-            $level    = (int) Str::after($level, 'L');
+            $level = (int)Str::after($level, 'L');
             $subScore += ($level * $unitScore);
         }
 

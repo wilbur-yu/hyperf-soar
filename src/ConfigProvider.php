@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of project hyperf-soar.
  *
@@ -12,6 +12,7 @@ declare(strict_types = 1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 namespace Wilbur\HyperfSoar;
 
 use Wilbur\HyperfSoar\Aspect\ResponseAspect;
@@ -37,10 +38,10 @@ class ConfigProvider
             ],
             'publish' => [
                 [
-                    'id'          => 'config',
+                    'id' => 'config',
                     'description' => 'The config for soar.',
-                    'source'      => __DIR__ . '/../publish/soar.php',
-                    'destination' => BASE_PATH . '/config/autoload/soar.php',
+                    'source' => __DIR__.'/../publish/soar.php',
+                    'destination' => BASE_PATH.'/config/autoload/soar.php',
                 ],
             ],
         ];

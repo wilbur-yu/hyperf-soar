@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of project hyperf-soar.
  *
@@ -12,10 +12,12 @@ declare(strict_types = 1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 namespace Wilbur\HyperfSoar;
 
 use Guanguans\SoarPHP\Soar;
 use Hyperf\Utils\Arr;
+
 use function config;
 
 class SoarService extends Soar
