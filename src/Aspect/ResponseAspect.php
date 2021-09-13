@@ -49,7 +49,9 @@ class ResponseAspect extends AbstractAspect
      * @Value("soar.cut_classes")
      * @var array
      */
-    public $classes;
+    public $classes = [
+        'Hyperf\HttpServer\Response::json',
+    ];
     /**
      * @Value("soar")
      * @var array

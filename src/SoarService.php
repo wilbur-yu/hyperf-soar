@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace Wilbur\HyperfSoar;
 
 use Guanguans\SoarPHP\Soar;
-use Hyperf\Utils\Arr;
 
 use function config;
 
@@ -27,9 +26,8 @@ class SoarService extends Soar
     public function __construct(array $config = null)
     {
         $config = $config ?? config('soar');
-
-        Arr::forget($config, 'enabled');
-        Arr::set($config, '-report-type', 'json');
+        unset($config['enabled'], $config['cut_classes']);
+        $config['-report-type'] = 'json';
 
         parent::__construct($config);
     }
