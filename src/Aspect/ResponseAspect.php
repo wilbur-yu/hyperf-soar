@@ -22,7 +22,6 @@ use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\Engine\Channel;
 use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\Utils\Arr;
 use Hyperf\Utils\Context;
 use Hyperf\Utils\Str;
 use Throwable;
@@ -129,21 +128,20 @@ class ResponseAspect extends AbstractAspect
      */
     protected function formatting(string $json): array
     {
-        $results = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        return $results;
-        $results = Arr::flatten($results, 1);
-
-        $items = [];
-        foreach ($results as $result) {
-            $score = $this->getScore($result['Severity']);
-            if ($score) {
-                $result['Score'] = $score;
-            }
-            $items[] = $result;
-        }
-
-        unset($results);
-
-        return $items;
+        return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        // $results = Arr::flatten($results, 1);
+        //
+        // $items = [];
+        // foreach ($results as $result) {
+        //     $score = $this->getScore($result['Severity']);
+        //     if ($score) {
+        //         $result['Score'] = $score;
+        //     }
+        //     $items[] = $result;
+        // }
+        //
+        // unset($results);
+        //
+        // return $items;
     }
 }

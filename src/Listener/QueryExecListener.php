@@ -23,7 +23,6 @@ use Hyperf\Utils\Arr;
 use Hyperf\Utils\Context;
 use Hyperf\Utils\Str;
 
-use function class_basename;
 
 #[Listener]
 class QueryExecListener implements ListenerInterface
@@ -48,8 +47,8 @@ class QueryExecListener implements ListenerInterface
         if ($event instanceof QueryExecuted && $this->soarIsEnabled) {
             $sql = str_replace('`', '', $event->sql);
             if (!Arr::isAssoc($event->bindings)) {
-                foreach ($event->bindings as $key => $value) {
-                    $sql = Str::replaceFirst('?', "'{$value}'", $sql);
+                foreach ($event->bindings as $value) {
+                    $sql = Str::replaceFirst('?', "'$value'", $sql);
                 }
             }
             $eventSqlList = (array)Context::get(self::SQL_RECORD_KEY);

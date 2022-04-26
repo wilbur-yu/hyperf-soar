@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Wilbur\HyperfSoar;
 
-use Guanguans\SoarPHP\Exceptions\InvalidArgumentException;
 use Guanguans\SoarPHP\Exceptions\RuntimeException;
 use Guanguans\SoarPHP\Support\OsHelper;
 use Swoole\Coroutine\System;
