@@ -17,6 +17,8 @@ namespace Wilbur\HyperfSoar;
 
 use Guanguans\SoarPHP\Soar;
 
+use Guanguans\SoarPHP\Support\OsHelper;
+
 use function config;
 
 class SoarService extends Soar
@@ -26,9 +28,21 @@ class SoarService extends Soar
     public function __construct(array $config = null)
     {
         $config = $config ?? config('soar');
-        unset($config['enabled'], $config['cut_classes']);
+        $soarPath = $config['-soar-path'];
         $config['-report-type'] = 'json';
+        unset($config['enabled'], $config['cut_classes'], $config['-soar-path']);
+        parent::__construct($config, $soarPath);
+    }
 
-        parent::__construct($config);
+    protected function getDefaultSoarPath(): string
+    {
+        if (OsHelper::isWindows()) {
+            return __DIR__.'/../vendor/guanguans/soar-php/bin/soar.windows-amd64';
+        }
+        if (OsHelper::isMacOS()) {
+            return __DIR__.'/../vendor/guanguans/soar-php/bin/soar.darwin-amd64';
+        }
+
+        return __DIR__.'/../vendor/guanguans/soar-php/bin/soar.linux-amd64';
     }
 }

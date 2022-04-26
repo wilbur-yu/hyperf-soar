@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Wilbur\HyperfSoar\Aspect;
 
-use Hyperf\Config\Annotation\Value;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Annotation\Inject;
@@ -32,7 +31,6 @@ use Wilbur\HyperfSoar\SoarService;
 use Psr\Container\ContainerInterface;
 
 use function array_merge;
-use function class_basename;
 use function co;
 use function explode;
 use function json_decode;
@@ -40,35 +38,26 @@ use function json_encode;
 
 use const JSON_UNESCAPED_UNICODE;
 
-/**
- * @Aspect
- */
+#[Aspect]
 class ResponseAspect extends AbstractAspect
 {
-    /**
-     * @Value("soar.cut_classes")
-     * @var array
-     */
     public $classes = [
         'Hyperf\HttpServer\Response::json',
     ];
-    /**
-     * @Value("soar")
-     * @var array
-     */
-    protected $config;
-    /**
-     * @Inject()
-     * @var \Wilbur\HyperfSoar\SoarService
-     */
-    protected $service;
 
-    // public function __construct(ContainerInterface $container)
-    // {
-    //     $this->service = $container->get(SoarService::class);
-    //     $this->config = $container->get(ConfigInterface::class)->get('soar');
-    //     $this->classes = $this->config['cut_classes'] ?? ['Hyperf\HttpServer\Response::json',];
-    // }
+    protected array $config;
+
+    #[Inject]
+    protected SoarService $service;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->service = $container->get(SoarService::class);
+        $this->config = $container->get(ConfigInterface::class)->get('soar');
+        if (isset($this->config['cut_classes']) && !empty($this->config['cut_classes'])) {
+            $this->classes = $this->config['cut_classes'];
+        }
+    }
 
     /**
      * @throws \Hyperf\Di\Exception\Exception
@@ -76,9 +65,8 @@ class ResponseAspect extends AbstractAspect
      */
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        $sqlKey = class_basename(QueryExecListener::class);
-
-        if (!$this->config['enabled'] || !Context::has($sqlKey) || !is_file($this->config['-soar-path'])) {
+        $sqlKey = QueryExecListener::SQL_RECORD_KEY;
+        if (!$this->config['enabled']) {
             return $proceedingJoinPoint->process();
         }
 
@@ -97,10 +85,7 @@ class ResponseAspect extends AbstractAspect
             foreach ($eventSqlList as $sql) {
                 co(function () use ($sql, $channel) {
                     $soar = $this->service->score($sql);
-                    $explain = [
-                        'query' => $sql,
-                        'explain' => $this->formatting($soar),
-                    ];
+                    $explain = $this->formatting($soar);
                     $channel->push($explain);
                 });
                 $explains[] = $channel->pop();
@@ -145,6 +130,7 @@ class ResponseAspect extends AbstractAspect
     protected function formatting(string $json): array
     {
         $results = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        return $results;
         $results = Arr::flatten($results, 1);
 
         $items = [];

@@ -25,15 +25,11 @@ use Hyperf\Utils\Str;
 
 use function class_basename;
 
-/**
- * @Listener
- */
+#[Listener]
 class QueryExecListener implements ListenerInterface
 {
-    /**
-     * @var bool
-     */
-    protected $soarIsEnabled;
+    protected bool $soarIsEnabled;
+    public const SQL_RECORD_KEY = 'wilbur-yu-hyperf-soar-sql-listener';
 
     public function __construct(ConfigInterface $config)
     {
@@ -56,9 +52,9 @@ class QueryExecListener implements ListenerInterface
                     $sql = Str::replaceFirst('?', "'{$value}'", $sql);
                 }
             }
-            $eventSqlList = (array)Context::get(class_basename(__CLASS__));
+            $eventSqlList = (array)Context::get(self::SQL_RECORD_KEY);
             $eventSqlList[] = $sql;
-            Context::set(class_basename(__CLASS__), $eventSqlList);
+            Context::set(self::SQL_RECORD_KEY, $eventSqlList);
         }
     }
 }
