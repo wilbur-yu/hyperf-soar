@@ -68,12 +68,13 @@ class ResponseAspect extends AbstractAspect
         if (!$this->config['enabled']) {
             return $proceedingJoinPoint->process();
         }
-
-        $eventSqlList = Context::get($sqlKey);
+        $response = $proceedingJoinPoint->process();
+        if (!($eventSqlList = Context::get($sqlKey))) {
+            return $response;
+        }
 
         $explains = [];
         $channel = new Channel();
-        $response = $proceedingJoinPoint->process();
         $oldBody = json_decode(
             $response->getBody()->getContents(),
             true,
