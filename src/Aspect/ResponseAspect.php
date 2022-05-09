@@ -23,6 +23,8 @@ use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\Engine\Channel;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Utils\Context;
+use Hyperf\Utils\Exception\ParallelExecutionException;
+use Hyperf\Utils\Parallel;
 use Hyperf\Utils\Str;
 use Throwable;
 use Wilbur\HyperfSoar\Listener\QueryExecListener;
@@ -73,14 +75,26 @@ class ResponseAspect extends AbstractAspect
             return $response;
         }
 
-        $explains = [];
-        $channel = new Channel();
         $oldBody = json_decode(
             $response->getBody()->getContents(),
             true,
             512,
             JSON_THROW_ON_ERROR
         );
+        $explains = $this->parallel($eventSqlList);
+
+        $newBody = json_encode(
+            array_merge($oldBody, ['soar' => $explains]),
+            JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+        );
+
+        return $response->withBody(new SwooleStream($newBody));
+    }
+
+    protected function channel(array $eventSqlList): array
+    {
+        $explains = [];
+        $channel = new Channel();
         try {
             foreach ($eventSqlList as $sql) {
                 co(function () use ($sql, $channel) {
@@ -99,12 +113,30 @@ class ResponseAspect extends AbstractAspect
             ];
         }
 
-        $newBody = json_encode(
-            array_merge($oldBody, ['soar' => $explains]),
-            JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
-        );
+        return $explains;
+    }
 
-        return $response->withBody(new SwooleStream($newBody));
+    protected function parallel(array $eventSqlList): array
+    {
+        $parallel = new Parallel();
+        try {
+            foreach ($eventSqlList as $sql) {
+                $parallel->add(function () use ($sql) {
+                    $soar = $this->service->score($sql);
+
+                    return $this->formatting($soar);
+                });
+            }
+
+            $explains = $parallel->wait();
+        } catch (ParallelExecutionException $throwable) {
+            $explains = [
+                'throwables' => $throwable->getThrowables(),
+                'result' => $throwable->getResults(),
+            ];
+        }
+
+        return $explains;
     }
 
     protected function getScore(?string $severity = null): ?int
