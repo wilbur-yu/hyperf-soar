@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Wilbur\HyperfSoar\Aspect;
 
+use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Annotation\Inject;
@@ -22,7 +23,6 @@ use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\Engine\Channel;
 use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\Utils\Context;
 use Hyperf\Utils\Exception\ParallelExecutionException;
 use Hyperf\Utils\Parallel;
 use Hyperf\Utils\Str;
@@ -42,7 +42,7 @@ use const JSON_UNESCAPED_UNICODE;
 #[Aspect]
 class ResponseAspect extends AbstractAspect
 {
-    public $classes = [
+    public array $classes = [
         'Hyperf\HttpServer\Response::json',
     ];
 
