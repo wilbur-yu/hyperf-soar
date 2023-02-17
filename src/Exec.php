@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace Wilbur\HyperfSoar;
 
 use Guanguans\SoarPHP\Exceptions\RuntimeException;
-use Guanguans\SoarPHP\Support\OsHelper;
+use Guanguans\SoarPHP\Support\OS;
 use Swoole\Coroutine\System;
 
 trait Exec
@@ -30,7 +30,7 @@ trait Exec
      */
     public function exec(string $command): string
     {
-        OsHelper::isWindows() && $command = 'powershell '.$command;
+        OS::isWindows() && $command = 'powershell '.$command;
         $result = System::exec($command);
 
         if ($result['code'] !== 0) {

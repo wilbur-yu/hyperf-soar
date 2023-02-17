@@ -122,7 +122,7 @@ class ResponseAspect extends AbstractAspect
         try {
             foreach ($eventSqlList as $sql) {
                 $parallel->add(function () use ($sql) {
-                    $soar = $this->service->score($sql);
+                    $soar = $this->service->jsonScores($sql);
 
                     return $this->formatting($soar);
                 });

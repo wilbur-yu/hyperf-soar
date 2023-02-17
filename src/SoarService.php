@@ -17,13 +17,13 @@ namespace Wilbur\HyperfSoar;
 
 use Guanguans\SoarPHP\Soar;
 
-use Guanguans\SoarPHP\Support\OsHelper;
+use Guanguans\SoarPHP\Support\OS;
 
 use function config;
 
 class SoarService extends Soar
 {
-    use Exec;
+//    use Exec;
 
     public function __construct(array $config = null)
     {
@@ -32,17 +32,5 @@ class SoarService extends Soar
         $config['-report-type'] = 'json';
         unset($config['enabled'], $config['cut_classes'], $config['-soar-path']);
         parent::__construct($config, $soarPath);
-    }
-
-    protected function getDefaultSoarPath(): string
-    {
-        if (OsHelper::isWindows()) {
-            return __DIR__.'/../vendor/guanguans/soar-php/bin/soar.windows-amd64';
-        }
-        if (OsHelper::isMacOS()) {
-            return __DIR__.'/../vendor/guanguans/soar-php/bin/soar.darwin-amd64';
-        }
-
-        return __DIR__.'/../vendor/guanguans/soar-php/bin/soar.linux-amd64';
     }
 }
