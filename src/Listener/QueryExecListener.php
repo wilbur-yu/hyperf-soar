@@ -32,7 +32,7 @@ class QueryExecListener implements ListenerInterface
 
     public function __construct(ConfigInterface $config)
     {
-        $this->soarIsEnabled = $config->get('soar.enabled');
+        $this->soarIsEnabled = $config->get('soar.enabled', false);
     }
 
     public function listen(): array
