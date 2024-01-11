@@ -24,7 +24,7 @@ trait Exec
     /**
      * @param  string  $command
      *
-     * @throws \Guanguans\SoarPHP\Exceptions\RuntimeException
+     * @throws RuntimeException
      *
      * @return mixed
      */

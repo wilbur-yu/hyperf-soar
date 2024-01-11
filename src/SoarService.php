@@ -17,13 +17,10 @@ namespace Wilbur\HyperfSoar;
 
 use Guanguans\SoarPHP\Soar;
 
-use Guanguans\SoarPHP\Support\OS;
-
-use function config;
+use function Hyperf\Config\config;
 
 class SoarService extends Soar
 {
-//    use Exec;
 
     public function __construct(array $config = null)
     {

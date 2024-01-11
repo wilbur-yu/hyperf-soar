@@ -28,7 +28,7 @@
     "autoload-dev": {
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-json": "*",
         "guanguans/soar-php": "^3.0",
         "hyperf/config": "^3.0",

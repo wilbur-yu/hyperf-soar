@@ -21,18 +21,20 @@ use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
+use Hyperf\Di\Exception\Exception;
 use Hyperf\Engine\Channel;
 use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\Utils\Exception\ParallelExecutionException;
-use Hyperf\Utils\Parallel;
-use Hyperf\Utils\Str;
+use Hyperf\Coroutine\Exception\ParallelExecutionException;
+use Hyperf\Coroutine\Parallel;
+use Hyperf\Stringable\Str;
+use JsonException;
 use Throwable;
 use Wilbur\HyperfSoar\Listener\QueryExecListener;
 use Wilbur\HyperfSoar\SoarService;
 use Psr\Container\ContainerInterface;
 
 use function array_merge;
-use function co;
+use function Hyperf\Coroutine\co;
 use function explode;
 use function json_decode;
 use function json_encode;
@@ -61,8 +63,8 @@ class ResponseAspect extends AbstractAspect
     }
 
     /**
-     * @throws \Hyperf\Di\Exception\Exception
-     * @throws \JsonException
+     * @throws Exception
+     * @throws JsonException
      */
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
@@ -157,7 +159,7 @@ class ResponseAspect extends AbstractAspect
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     protected function formatting(string $json): array
     {
